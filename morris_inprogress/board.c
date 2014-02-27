@@ -62,7 +62,7 @@ void board_destroy(board *board)
  
 
 //will fetch and print entire linked list from hashvalue 
-void *board_get(board *board, char *position, char* player,)
+char *board_get(board *board, char *position, char* player,)
 {
   if (!board) return NULL;
  
@@ -113,15 +113,26 @@ dx = _hash(position) % board->size;
 void board_put(BOARD *board, char *position, char *player, char *status);
 {
   if (!board) return;
- 
+  if(!board->tbl[idx]){
   unsigned long idx = _hash(position) % board->size;
  
   struct square *n_new = calloc(1, sizeof(struct square));
   n_new->position = calloc(1, strlen(position,BOARD_MAX_positionLEN)+1)
-  n_new->player= calloc(1, strlen(status, board_MAX_positionLEN) + 1);//adds int for status using player  
-  n_new->player = status;
-  n_new->nxt = board->tbl[idx];
-  board->tbl[idx] = n_new;
+    strcpy(new_position,position);
+  if(player[1]=='1')
+    {
+      n_new->P1= calloc(1, strlen(status, board_MAX_positionLEN) + 1);//creates plaer 1
+      strcpy(n_new->P1,status);
+    }
+  if(player[1]=='2')
+    {
+      n_new->P2= calloc(1, strlen(status, board_MAX_positionLEN) +1);
+      strcpy(n_new->P2,status);
+    }
+    n_new->nxt = board->tbl[idx];
+    board->tbl[idx] = n_new;}
+  else
+    board_add(board, position, player,status
 }
 //adds players ship  to already existing square. 
 void board_add(board *board, char *position, char *player, char*status)
@@ -129,8 +140,7 @@ void board_add(board *board, char *position, char *player, char*status)
   if (!board) return;
  
   unsigned long idx = _hash(position) % board->size;
- 
-  struct board_node *p = NULL, *n = board->tbl[idx];
+  struct board_node *n = board->tbl[idx];
   while (n) {
     if (strncmp(position, n->position, board_MAX_positionLEN) == 0) {
 		n_new->position = calloc(1, strlen(position, BOARD_MAX_positionLEN) + 1)

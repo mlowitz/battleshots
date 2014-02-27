@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 		//data struct variables 
 		char* player[2];  //store player info 
 		char* position[3]; //sotre position
-
+		char* status[2];
 		/* accept: wait for a connection request */
 		connfd = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
 		if (connfd < 0)
@@ -148,7 +148,9 @@ int main(int argc, char **argv) {
 
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position 
-
+			
+			board_put(board, position, player, ship);
+			
 
 			
 		}
@@ -160,11 +162,14 @@ int main(int argc, char **argv) {
 			*/
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position
+			status = board_get(board, position, player);
+		
 		}
 		else
 		{
 			//retrun error in reading from server 
 		}
+		strcpy(buf,status);
 		n = write(connfd, buf, strlen(buf));
 		if (n < 0)
 			error("ERROR writing to socket");
@@ -172,3 +177,4 @@ int main(int argc, char **argv) {
 		close(connfd);
 	}
 }
+
