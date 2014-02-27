@@ -68,17 +68,20 @@ void *board_get(board *board, char *position, char* player,)
  
   unsigned long idx = _hash(positon) % board->size;
  
-  struct board_node *n = board->tbl[idx];
+  struct square *n = board->tbl[idx];
  /* while (n) {
       return n->val;
-      n = n->nxt;
-  }*/
-  while (n) {
-      printf("%s\n",n->val) ;
-      n = n->nxt;
-      //return list->str;
-      
+      n = n->nxt;*/
+  if (player[1]=='1');
+  {
+    return n->P1;//return player1 
   }
+  else if(player[1]=='2')
+    {
+      return n->P2;//retrun player2
+    }  
+      
+  
   return NULL;
 }
 //will fetch linked list same as board_get but will scan for false positives 
@@ -86,7 +89,7 @@ void *ana_get(board *board, char *position)
 {
   if (!board) return NULL;
  
-  unsigned long idx = _hash(position) % board->size;
+dx = _hash(position) % board->size;
  
   struct board_node *n = board->tbl[idx];
  /* while (n) {
