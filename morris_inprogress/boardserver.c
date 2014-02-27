@@ -1,60 +1,174 @@
+/*
+* echoserver.c - A simple connection-based echo server
+* usage: echoserver <port>
+*/
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <time.h>
-#include "board.h"
-/*ip address of the server is the bord number/ name 
-or game number */
-int main(int argc, char *argv[])
-{
-	int listenfd = 0, connfd = 0;
-	struct sockaddr_in serv_addr;
+#include "server_functions.h"
 
-	char sendBuff[1025];
-	time_t ticks;
+#define BUFSIZE 1024
 
+#if 0
+/*
+* Structs exported from netinet/in.h (for easy reference)
+*/
+
+/* Internet address */
+struct in_addr {
+	unsigned int s_addr;
+};
+
+/* Internet style socket address */
+struct sockaddr_in  {
+	unsigned short int sin_family; /* Address family */
+	unsigned short int sin_port;   /* Port number */
+	struct in_addr sin_addr;	 /* IP address */
+	unsigned char sin_zero[...];   /* Pad to size of 'struct sockaddr' */
+};
+
+/*
+* Struct exported from netdb.h
+*/
+
+/* Domain name service (DNS) host entry */
+struct hostent {
+	char    *h_name;        /* official name of host */
+	char    **h_aliases;    /* alias list */
+	int     h_addrtype;     /* host address type */
+	int     h_length;       /* length of address */
+	char    **h_addr_list;  /* list of addresses */
+}
+#endif
+
+/*
+* error - wrapper for perror
+*/
+void error(char *msg) {
+	perror(msg);
+	exit(1);
+}
+
+int main(int argc, char **argv) {
+	int listenfd; /* listening socket */
+	int connfd; /* connection socket */
+	int portno; /* port to listen on */
+	int clientlen; /* byte size of client's address */
+	struct sockaddr_in serveraddr; /* server's addr */
+	struct sockaddr_in clientaddr; /* client addr */
+	struct hostent *hostp; /* client host info */
+	char buf[BUFSIZE]; /* message buffer */
+	char *hostaddrp; /* dotted decimal host addr string */
+	int optval; /* flag value for setsockopt */
+	int n; /* message byte size */
+
+	/* check command line args */
+	if (argc != 2) {
+		fprintf(stderr, "usage: %s <port>\n", argv[0]);
+		exit(1);
+	}
+	portno = atoi(argv[1]);
+
+	/* socket: create a socket */
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
-	memset(&serv_addr, '0', sizeof(serv_addr));
-	memset(sendBuff, '0', sizeof(sendBuff));
+	if (listenfd < 0)
+		error("ERROR opening socket");
 
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(5000);
+	/* setsockopt: Handy debugging trick that lets
+	* us rerun the server immediately after we kill it;
+	* otherwise we have to wait about 20 secs.
+	* Eliminates "ERROR on binding: Address already in use" error.
+	*/
+	optval = 1;
+	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,
+		(const void *)&optval, sizeof(int));
 
-	bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+	/* build the server's internet address */
+	bzero((char *)&serveraddr, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET; /* we are using the Internet */
+	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY); /* accept reqs to any IP addr */
+	serveraddr.sin_port = htons((unsigned short)portno); /* port to listen on */
+	
+	/* bind: associate the listening socket with a port */
+	if (bind(listenfd, (struct sockaddr *) &serveraddr,
+		sizeof(serveraddr)) < 0)
+		error("ERROR on binding");
 
-	listen(listenfd, 10);
-	while (1)
-	{
-		connfd = accept(listenfd, (struct sockaddr*)NULL, NULL);
+	/* listen: make it a listening socket ready to accept connection requests */
+	if (listen(listenfd, 5) < 0) /* allow 5 requests to queue up */
+		error("ERROR on listen");
 
-		ticks = time(NULL);
-		snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-		write(connfd, sendBuff, strlen(sendBuff));
-		/*listen and repond 
-		if mode = s setting board*/
-		/*
-		
-		listening mode 
-		function  will receice and insert value to table */
+	/* main loop: wait for a connection request, echo input line,
+	then close connection. */
+	clientlen = sizeof(clientaddr);
+	while (1) {
 
-				//insert functiong using peice added 
+		//data struct variables 
+		char* player[2];  //store player info 
+		char* position[3]; //sotre position
 
-						//write to 
-					//if response = 0 successsuccessfully placed and add to array
-					//if = 1 error try again 
-					//
-		//read function 
-			//listen for move 
-			//return int of ship 
+		/* accept: wait for a connection request */
+		connfd = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
+		if (connfd < 0)
+			error("ERROR on accept");
+
+		/* gethostbyaddr: determine who sent the message */
+		hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,
+			sizeof(clientaddr.sin_addr.s_addr), AF_INET);
+		if (hostp == NULL)
+			error("ERROR on gethostbyaddr");
+		hostaddrp = inet_ntoa(clientaddr.sin_addr);
+		if (hostaddrp == NULL)
+			error("ERROR on inet_ntoa\n");
+		printf("server established connection with %s (%s)\n",
+			hostp->h_name, hostaddrp);
+
+
+		/* read: read input string from the client */
+		bzero(buf, BUFSIZE);
+		n = read(connfd, buf, BUFSIZE);
+		if (n < 0)
+			error("ERROR reading from socket");
+		printf("server received %d bytes: %s", n, buf);
+		//data to be sent to server in format 
+		//[R/W]XYP[1/2]
+		/*if sent data is enter*/
+		if (buf[0] == 'W')
+		{	
+			/*
+			*function to place peice in server
+			*/
+
+			player = playerNum(buf);//get player number
+			position = parsePosition(buf);//get position 
+
+
+			
+		}
+	
+		elseif(buf[0] == 'R')
+		{
+			/*
+			*function to read from server 
+			*/
+			player = playerNum(buf);//get player number
+			position = parsePosition(buf);//get position
+		}
+		else
+		{
+			//retrun error in reading from server 
+		}
+		n = write(connfd, buf, strlen(buf));
+		if (n < 0)
+			error("ERROR writing to socket");
+
 		close(connfd);
-
-		sleep(1);
 	}
 }
