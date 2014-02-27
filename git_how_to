@@ -1,0 +1,12 @@
+https://stackoverflow.com/questions/2745076/what-is-the-difference-between-git-commit-and-git-push
+
+difference between commit and push 
+push adds to the shared repo 
+commit stuff to local repo 
+if you create a file a
+git add [filename]
+git commit [then added description]
+
+
+for adding to our shared repo 
+git push then use your git logins 
