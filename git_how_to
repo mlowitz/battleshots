@@ -10,3 +10,9 @@ git commit [then added description]
 
 for adding to our shared repo 
 git push then use your git logins 
+
+to store git log in use 
+git config credential.helper store
+
+or in osx use it config --global credential.helper osxkeychain
+
