@@ -1,0 +1,143 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <malloc.h>
+#include <string.h>
+#include <stdbool.h>
+#include "board.h"
+ 
+unsigned long _hash(char *position)
+{
+  /*
+   *program hashes using sum of charters in word from 1-26 
+   */
+  
+  int c;
+  unsigned long hash=wordToInt(position); 
+    
+  
+  return hash;
+
+}
+ 
+
+board *board_create(int size)
+{
+  /* 
+   *program creates hash tables 
+
+   */
+  board *board = malloc(sizeof(board));
+ 
+  board->size = size;
+ 
+  board->tbl = calloc(1, size * sizeof(struct board_node *));
+ 
+  return board;
+}
+//free memory from hash table 
+void board_destroy(board *board)
+{
+  if (!board) return;
+ 
+  int i;
+  for (i = 0; i < board->size; i++) {
+    struct board_node *n = board->tbl[i];
+    while (n) {
+      struct board_node *n_old = n;
+ 
+      n = n->nxt;
+ 
+      free(n_old->position);
+      n_old->position = NULL;
+      free(n_old);
+      n_old = NULL;
+    }
+  }
+ 
+  free(board->tbl);
+  free(board);
+ 
+  board = NULL;
+}
+ 
+
+//will fetch and print entire linked list from hashvalue 
+void *board_get(board *board, char *position, char* player,)
+{
+  if (!board) return NULL;
+ 
+  unsigned long idx = _hash(positon) % board->size;
+ 
+  struct board_node *n = board->tbl[idx];
+ /* while (n) {
+      return n->val;
+      n = n->nxt;
+  }*/
+  while (n) {
+      printf("%s\n",n->val) ;
+      n = n->nxt;
+      //return list->str;
+      
+  }
+  return NULL;
+}
+//will fetch linked list same as board_get but will scan for false positives 
+void *ana_get(board *board, char *position)
+{
+  if (!board) return NULL;
+ 
+  unsigned long idx = _hash(position) % board->size;
+ 
+  struct board_node *n = board->tbl[idx];
+ /* while (n) {
+      return n->val;
+      n = n->nxt;
+  }*/
+  while (n) {
+      
+      if (match(position,n->val)){
+      printf("%s\n",n->val) ;}
+      n = n->nxt;
+      //return list->str;
+      
+  }
+  return NULL;
+}
+ 
+
+
+//function to add to hasboardable 
+void board_put(BOARD *board, char *position, char *player, char *status);
+{
+  if (!board) return;
+ 
+  unsigned long idx = _hash(position) % board->size;
+ 
+  struct square *n_new = calloc(1, sizeof(struct square));
+  n_new->position = calloc(1, strlen(position,BOARD_MAX_positionLEN)+1)
+  n_new->player= calloc(1, strlen(status, board_MAX_positionLEN) + 1);//adds int for status using player  
+  n_new->player = status;
+  n_new->nxt = board->tbl[idx];
+  board->tbl[idx] = n_new;
+}
+//adds players ship  to already existing square. 
+void board_add(board *board, char *position, char *player, char*status)
+{
+  if (!board) return;
+ 
+  unsigned long idx = _hash(position) % board->size;
+ 
+  struct board_node *p = NULL, *n = board->tbl[idx];
+  while (n) {
+    if (strncmp(position, n->position, board_MAX_positionLEN) == 0) {
+		n_new->position = calloc(1, strlen(position, BOARD_MAX_positionLEN) + 1)
+			n_new->player = calloc(1, strlen(status, board_MAX_positionLEN) + 1);//adds int for status using player  
+			n_new->player = status;
+ 
+      break;
+    }
+ 
+    p = n;
+    n = n->nxt;
+  }
+}
