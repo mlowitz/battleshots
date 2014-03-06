@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "server_functions.h"
-
+#include "board.h"
 #define BUFSIZE 1024
 
 #if 0
@@ -111,9 +111,10 @@ int main(int argc, char **argv) {
 	while (1) {
 
 		//data struct variables 
-		char* player[2];  //store player info 
-		char* position[3]; //sotre position
-		char* status[2];
+	        char* status=malloc(2*sizeof(char*));
+		char* player=malloc(2*sizeof(char*));
+		char* positon=malloc(2*sizeof(char*));
+		char*ship = malloc(1*sizeof(char*));
 		/* accept: wait for a connection request */
 		connfd = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
 		if (connfd < 0)
@@ -145,11 +146,14 @@ int main(int argc, char **argv) {
 			/*
 			*function to place peice in server
 			*/
-
+		  char* player=malloc(2*sizeof(char*));
+		  char* positon=malloc(2*sizeof(char*));
+		  char* ship = malloc(1*sizeof(char*));
+		  
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position 
-			
-			board_put(board, position, player, ship);
+			ship = shipnum(buf); 
+			status =  board_put(board, position, player, ship);
 			
 
 			
@@ -163,7 +167,7 @@ int main(int argc, char **argv) {
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position
 			status = board_get(board, position, player);
-		
+			
 		}
 		else
 		{
