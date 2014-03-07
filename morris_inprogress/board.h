@@ -4,15 +4,10 @@
  */
  
 #define BOARD_MAX_positionLEN 50
-struct info
-{
-	char *status;
-};
 struct square {
-  char *position;
-  struct square *nxt;
-  struct char *P1;
-  struct char *P2;
+  char *position;;
+  char *P1;
+  char *P2;
 };
  
 typedef struct board {
@@ -20,7 +15,7 @@ typedef struct board {
   int size;
 } BOARD;
  
-BOARD *board_create(int size);                    /* allocate hasBOARDable mem */
+board *board_create(int size);                    /* allocate hasBOARDable mem *
 void board_destroy(BOARD *board);                    /* free hasBOARDable mem */
 void *board_get(BOARD *board, char *position);            /* retrieve entry */
 void board_put(BOARD *board, char *position, char *player, char *status);  /* store entry */
