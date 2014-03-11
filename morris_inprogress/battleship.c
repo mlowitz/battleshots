@@ -417,12 +417,3 @@ int main(void)
     } while (num==2);
     num = displayMenu();
 }
-    char ** board = newBoard();
-    
-    // print top row of numbers
-    PickPiece(board);
-   // return contents;
-    
-    displayBoard(board);
-
-}
