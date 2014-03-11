@@ -10,16 +10,6 @@
 #include "battleship_header.h"
 
 
-int getrow()
-{
-    return 0;
-}
-
-int getcolumn()
-{
-    return 0;
-}
-
 bool shipexists()
 {
     return true;
@@ -29,29 +19,84 @@ bool hitpiece()
 {
     return true;
 }
+/*
+ This function converts a character containing input to the enumerated type.
+ I used an enumerated type to make the code easier to read
+ */
+enum row convert(char * letter)
+{
+    enum row y;
+    if (WordExists("A",letter))
+    {
+        y=a;
+    }
+    if (WordExists("B", letter))
+    {
+        y=b;
+    }
+    if (WordExists("C", letter))
+    {
+        y=c;
+    }
+    if (WordExists("D", letter))
+    {
+        y=d;
+    }
+    if (WordExists("E", letter))
+    {
+        y=e;
+    }
+    if (WordExists("F", letter))
+    {
+        y=f;
+    }
+    if (WordExists("G", letter))
+    {
+        y=g;
+    }
+    if (WordExists("H", letter))
+    {
+        y=h;
+    }
+    if (WordExists("I", letter))
+    {
+        y=i;
+    }
+    if (WordExists("J", letter))
+    {
+        y=j;
+    }
+    return y;
+}
+/*
+ This function is used to determine if the placement is valid
+ */
 bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
 {
    
-    if (is_vertical)
+    if (is_vertical)                        // if the orientation is vertical
     {
-        for (int ii=x; ii<x+length; ii++)
-        { if (OutofBounds(ii, y))
-            {
-                return false;
-            }
-            if (board[y][ii]!='-')
+        if (OutofBounds(x, y+length))       // determines if the ship will be out of bounds
+        {
+            return  false;
+        }
+        for (int ii=y; ii<y+length; ii++)
+        {
+          
+            if (board[ii][x]!='-')
             return false;
         }
     }
-    if (!is_vertical)
+    else if (!is_vertical)                       // if the orientation is horizontal
     {
-        for (int ii=y; ii<y+length; ii++)
+        if (OutofBounds(x+length,y))
         {
-            if (OutofBounds(x,ii))
-            {
-                return false;
-            }
-            if (board[ii][x]!='-')
+            return false;
+        }
+        for (int ii=x; ii<x+length; ii++)   // determines if the ship will be out of bounds
+        {
+            
+            if (board[y][ii]!='-')
             return false;
         }
     }
@@ -61,25 +106,18 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
 {
     int x ;
     enum row y;
-    char *c = malloc(sizeof(char)*1);
+    char *letter = malloc(sizeof(char)*1);
     bool placed=false;
     
     printf("Please pick the coordinates that you would like to place your piece at (in the format of A #: ");
-    scanf("%s", c);
+  
     
-    if (WordExists("A", c))
-    {
-        y=a;
-    }
-    if (WordExists("B", c))
-    {
-        y=b;
-    }
+    scanf("%s", letter);
     
     
     scanf("%d", &x);
     
-    
+    y = convert(letter);
     
     
     while (!placed)
@@ -92,7 +130,7 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
                     for (int jj = x; jj<x+length; jj++)
                     {
                         placed=true;
-                        board[y][jj] = 's';
+                        board[y][jj] = length+48;
                     }
                 }
             
@@ -101,14 +139,17 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
                     for (int jj = y; jj<y+length; jj++)
                     {
                         placed=true;
-                        board[x][jj] = 's';
+                        board[jj][x] = length+48;
                         }
                     
                 }
                 else
                 {
                     printf("Those coordinates didn't work. Please try picking the coordinates again (in the format of A#");
-                    scanf("%d %d", &y, &x);
+                   scanf("%s", letter);
+             scanf("%d", &x);
+            
+            y = convert(letter);
                 }
             }
     }
@@ -126,6 +167,11 @@ void PickPiece(char ** board)
     int num_picked=0;
     bool orientation=false;
     bool piece1=false,piece2=false,piece3=false,piece4=false,piece5=false;
+    int hitAC=0;
+    int hitBAT=0;
+    int hitSub=0;
+    int hitDes=0;
+    int hitPB=0;
     char *response = malloc(Ship_Size);
     
     printf("Please type the number of the piece that you would like to place?\n");
@@ -133,48 +179,51 @@ void PickPiece(char ** board)
     while (num_picked<5)
     {
    displayBoard(board);
+      
+      if (!piece1)
         printf("1: AIRCRAFT\n");
-        if (piece1)                     // if piece was used yet
-        {
-            piece1=true;
-            num_picked++;
-        }
+        if (!piece2)
         printf("2: BATTLESHIP \n");
-        if (piece2)                     // if piece was used yet
-        {
-      
-            piece2=true;
-            num_picked++;
-        }
+        if (!piece3)
          printf("3: SUBMARINE \n");
-        if (piece3)                     // if piece was used yet
-        {
-           
-            piece3=true;
-            num_picked++;
-        }
+        if (!piece4)
               printf("4: DESTROYER \n");
-        if (piece4)                     // if piece was used yet
-        {
-      
-            piece4=true;
-            num_picked++;
-        }
+        if (!piece5)
         printf("5: PATROL BOAT \n");
-        if (piece5)                     // if piece was used yet
-        {
-            
-            piece5=true;
-            num_picked++;
-        }
         if (!piece1 || !piece2 || !piece3 || !piece4 || !piece5)
         {
             scanf("%d", &piece);
         }
-        int size=0;
-    
-    
-    
+         if (piece==1)
+        {
+            piece1=true;
+            num_picked++;
+            hitAC++;
+        }
+        if (piece==2)
+        {
+            piece2=true;
+            num_picked++;
+            hitBAT++;
+        }
+        if (piece==3)
+        {
+            piece3=true;
+            num_picked++;
+            hitSub++;
+        }
+        if (piece==4)
+        {
+            piece4=true;
+            num_picked++;
+            hitDes++;
+        }
+        if (piece==5)
+        {
+            piece5=true;
+            num_picked++;
+            hitPB++;
+        }
         do
            {
                printf("What orientation would you like to have the piece (veritcal/horizontal)\n");
@@ -211,7 +260,7 @@ void PickPiece(char ** board)
             break;
         
             case 5:     // patrol boat picked
-                size=2;
+            size=2;
             break;
         }
         placePiece_Begin(is_vertical, board, size);
@@ -287,9 +336,87 @@ void displayBoard(char ** board)
     }
     printf("\n");
 }
-int main(void)
+int displayMenu()
 {
     
+    char **board, ** searchBoard;
+    
+    board = newBoard();     // initialize board
+    
+    bool startGame=false;
+    
+    searchBoard = newBoard();    // that is the board the computer will see
+    int num=0;
+    
+    printf("Please select an option.\n");
+    printf("1: Start a new Game\n");
+    printf("2: Display Board\n");
+    printf("3: Cancel Game\n");
+    printf("4: Display the introduction again\n");
+    printf("5: Quit\n\n\n");
+    
+    scanf("%d", &num);
+    
+    if (num==1)
+    {
+        startGame=true;
+        // print top row of numbers
+        PickPiece(board);                   // this will allow you to select the ships
+        // return contents;
+        
+    }
+    else if (num==2 && startGame)
+    {
+        displayBoard(board);
+    }
+    else if (num==2)
+    {
+        printf("You have not started the game yet. Please start the game\n");
+    }
+    else if (num==3 && startGame)
+    {
+        deleteBoard(board, searchBoard);
+        return 0;
+    }
+    else if (num==3)
+    {
+        return 0;       // return to server menu
+    }
+    else if (num==4)
+    {
+        introduction();
+    }
+    
+    else if (num==5)
+    {
+        deleteBoard(board, searchBoard);
+        exit(0);
+    }
+    else{
+        printf("Your answer was unrecognizable. Please try again\n\n\n");
+    }
+    
+    return num;
+}
+
+int main(void)
+{
+       
+    int num;
+    char *answer = malloc(sizeof(char)*1);
+    printf("Do you want to read the introduction? (y/n)");
+    scanf("%c", answer);
+    
+    if (WordExists(answer, "y"))
+    {
+        introduction();
+    }
+    
+    do {
+        num=displayMenu();
+    } while (num==2);
+    num = displayMenu();
+}
     char ** board = newBoard();
     
     // print top row of numbers
