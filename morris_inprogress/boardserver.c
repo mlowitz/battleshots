@@ -1,7 +1,4 @@
-/*
-* echoserver.c - A simple connection-based echo server
-* usage: echoserver <port>
-*/
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -15,6 +12,10 @@
 #include "server_functions.h"
 #include "board.h"
 #define BUFSIZE 1024
+
+#ifndef boardserver.c
+#define boardserver.c 
+
 
 #if 0
 /*
@@ -56,7 +57,7 @@ void error(char *msg) {
 	exit(1);
 }
 
-int main(int argc, char **argv) {
+int server(int argc, char **argv) {
 	int listenfd; /* listening socket */
 	int connfd; /* connection socket */
 	int portno; /* port to listen on */
@@ -69,12 +70,11 @@ int main(int argc, char **argv) {
 	int optval; /* flag value for setsockopt */
 	int n; /* message byte size */
 
+	if (fork() ==0)
+	  {	  
 	/* check command line args */
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <port>\n", argv[0]);
-		exit(1);
-	}
-	portno = atoi(argv[1]);
+       
+	portno = atoi(80);
 
 	/* socket: create a socket */
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -108,13 +108,16 @@ int main(int argc, char **argv) {
 	/* main loop: wait for a connection request, echo input line,
 	then close connection. */
 	clientlen = sizeof(clientaddr);
+	board *board = board_create(16777216);
+	char* status=malloc(2*sizeof(char*));                                                                                                                         
+	char* player=malloc(2*sizeof(char*));                                                                                                                         
+	char* positon=malloc(2*sizeof(char*));                                                                                                                        
+	char*ship = malloc(1*sizeof(char*));              
 	while (1) {
-
-		//data struct variables 
-	        char* status=malloc(2*sizeof(char*));
-		char* player=malloc(2*sizeof(char*));
-		char* positon=malloc(2*sizeof(char*));
-		char*ship = malloc(1*sizeof(char*));
+	  
+    
+		
+	        
 		/* accept: wait for a connection request */
 		connfd = accept(listenfd, (struct sockaddr *) &clientaddr, &clientlen);
 		if (connfd < 0)
@@ -180,5 +183,10 @@ int main(int argc, char **argv) {
 
 		close(connfd);
 	}
+	  }
+	else{
+	exit(0);
+	}
 }
 
+#endif
