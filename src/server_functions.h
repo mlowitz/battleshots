@@ -9,3 +9,4 @@
 char* playernumber(char* buffer);
 char* parsePosition(char buffer);
 char* shipNum(char*buffer);
+#endif

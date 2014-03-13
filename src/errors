@@ -1,0 +1,47 @@
+battleship.c: In function ‘placevalid’:
+battleship.c:97:9: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:97:9: note: use option -std=c99 or -std=gnu99 to compile your code
+battleship.c:120:9: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c: In function ‘placePiece_Begin’:
+battleship.c:158:21: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:167:21: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c: In function ‘newBoard’:
+battleship.c:313:5: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:317:9: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:319:26: warning: cast from pointer to integer of different size [-Wpointer-to-int                     -cast]
+battleship.c: In function ‘displayBoard’:
+battleship.c:476:5: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:481:14: error: redefinition of ‘i’
+battleship.c:476:14: note: previous definition of ‘i’ was here
+battleship.c:481:5: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c:484:9: error: ‘for’ loop initial declarations are only allowed in C99 mode
+battleship.c: In function ‘deleteBoard’:
+battleship.c:493:5: error: ‘for’ loop initial declarations are only allowed in C99 mode
+In file included from board.c:6:0:
+board.h:18:1: error: unknown type name ‘board’
+board.c:23:1: error: unknown type name ‘board’
+board.c: In function ‘board_create’:
+board.c:29:3: error: unknown type name ‘board’
+board.c:31:8: error: request for member ‘size’ in something not a structure or union
+board.c:33:8: error: request for member ‘tbl’ in something not a structure or union
+board.c: At top level:
+board.c:38:20: error: unknown type name ‘board’
+board.c:65:17: error: unknown type name ‘board’
+board.c:65:60: error: expected declaration specifiers or ‘...’ before ‘)’ token
+board.c:88:15: error: unknown type name ‘board’
+board.c:114:1: error: expected identifier or ‘(’ before ‘{’ token
+board.c:138:16: error: unknown type name ‘board’
+board.h:18:1: error: unknown type name ‘board’
+server_functions.c: In function ‘position’:
+server_functions.c:4:22: error: subscripted value is neither array nor pointer nor vector
+server_functions.c:5:22: error: subscripted value is neither array nor pointer nor vector
+server_functions.c:8:2: warning: function returns address of local variable [enabled by defaul                     t]
+server_functions.c: In function ‘playerNum’:
+server_functions.c:14:23: error: subscripted value is neither array nor pointer nor vector
+server_functions.c:15:23: error: subscripted value is neither array nor pointer nor vector
+server_functions.c:17:2: warning: function returns address of local variable [enabled by defau                     lt]
+server_functions.c: In function ‘shipNum’:
+server_functions.c:22:20: error: subscripted value is neither array nor pointer nor vector
+server_functions.c:23:3: warning: return from incompatible pointer type [enabled by default]
+server_functions.c:23:3: warning: function returns address of local variable [enabled by defau                     lt]
+server_functions.h:6:0: error: unterminated #ifndef

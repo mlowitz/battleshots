@@ -1,6 +1,6 @@
-char* position(char buffer)
+char* position(char* buffer)
 {
-	char position[2];
+	char* position[2];
 	position[0] = buffer[2];
 	position[1] = buffer[3];
 	
@@ -8,7 +8,7 @@ char* position(char buffer)
 	return position;
 }
 
-char* playerNum(char buffer)
+char* playerNum(char* buffer)
 {
 	char playernum[2];
 	playernum[0] = buffer[4];
@@ -17,7 +17,7 @@ char* playerNum(char buffer)
 	return playernum;
 }
 
-char* shipNum(char buffer)
+char* shipNum(char* buffer)
 { char* shipnum[1];
   shipnum[0]=buffer[1];
   return shipnum;

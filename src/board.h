@@ -3,21 +3,22 @@
  *does not hash normaly uses special hash 
  */
  
-#define BOARD_MAX_positionLEN 50
+#define BOARD_MAX_position 50
 struct square {
   char *position;;
   char *P1;
   char *P2;
+  struct square **nxt;
 };
  
 typedef struct board {
   struct square **tbl;
   int size;
-} BOARD;
+} board;
  
-board *board_create(int size);                    /* allocate hasBOARDable mem *
-void board_destroy(BOARD *board);                    /* free hasBOARDable mem */
-void *board_get(BOARD *board, char *position);            /* retrieve entry */
-void board_put(BOARD *board, char *position, char *player, char *status);  /* store entry */
-void board_remove(BOARD *board, char *position);          /* remove entry */
-void *ana_get(BOARD *board, char *position);            /*prints list of anagrams */    
+board *board_create(int size);                    /* allocate hasBOARDable mem */
+void board_destroy(board *board);                  
+char* board_get(board *board, char *position);            /* retrieve entry */
+void board_put(board *board, char *position, char *player, char *status);  /* store entry */
+void board_remove(board *board, char *position);          /* remove entry */
+void *ana_get(board *board, char *position);            /*prints list of anagrams */    
