@@ -9,6 +9,20 @@
 #include <stdio.h>
 #include "battleship_header.h"
 
+int IP = 0;
+int sockfd = 0, n = 0;
+char Buff[1024];
+struct sockaddr_in serv_addr;
+
+int       conn_s;                /*  connection socket         */
+short int port;                  /*  port number               */
+struct    sockaddr_in servaddr;  /*  socket address structure  */
+char     *szAddress;             /*  Holds remote IP address   */
+char     *szPort;                /*  Holds remote port         */
+char     *endptr;                /*  for strtol()              */
+int playernumber;
+char **board, ** searchBoard;
+bool started=false;
 
 bool shipexists()
 {
@@ -85,6 +99,16 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
           
             if (board[ii][x]!='-')
             return false;
+            else
+            {
+              board[ii][x]=length;
+                Buff[0]='W';
+                Buff[1]=ii;
+                Buff[2]=x;
+                Buff[3]=playernumber;
+                Writeline(sockfd, Buff, strlen(Buff));
+                
+            }
         }
     }
     else if (!is_vertical)                       // if the orientation is horizontal
@@ -98,6 +122,12 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
             
             if (board[y][ii]!='-')
             return false;
+            else board[y][ii]=length;
+            Buff[0]='W';
+            Buff[1]=y;
+            Buff[2]=ii;
+            Buff[3]=playernumber;
+    //        Writeline(sockfd, Buff, strlen(Buff));
         }
     }
     return true;
@@ -110,8 +140,6 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
     bool placed=false;
     
     printf("Please pick the coordinates that you would like to place your piece at (in the format of A #: ");
-  
-    
     scanf("%s", letter);
     
     
@@ -120,7 +148,7 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
     y = convert(letter);
     
     
-    while (!placed)
+    while (!placed)                             // determines if a piece has been placed
     {
         if (placevalid(x,y,is_vertical, length, board))
         {
@@ -132,7 +160,7 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
                         placed=true;
                         board[y][jj] = length+48;
                     }
-                }
+                    }
             
                 else if (is_vertical)
                     {
@@ -142,18 +170,17 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
                         board[jj][x] = length+48;
                         }
                     
-                }
-                else
-                {
-                    printf("Those coordinates didn't work. Please try picking the coordinates again (in the format of A#");
-                   scanf("%s", letter);
+                    }
+        }
+        else
+        {
+            printf("Those coordinates didn't work. Please try picking the coordinates again (in the format of A #");
+            scanf("%s", letter);
              scanf("%d", &x);
             
             y = convert(letter);
-                }
             }
-    }
-    
+        }
 
 }
 /*
@@ -165,22 +192,22 @@ void PickPiece(char ** board)
     int piece =0;           // number as defined in menu
     bool is_vertical;
     int num_picked=0;
-    bool orientation=false;
-    bool piece1=false,piece2=false,piece3=false,piece4=false,piece5=false;
     int hitAC=0;
     int hitBAT=0;
     int hitSub=0;
     int hitDes=0;
     int hitPB=0;
+    bool orientation=false;
+    bool piece1=false,piece2=false,piece3=false,piece4=false,piece5=false;
     char *response = malloc(Ship_Size);
     
     printf("Please type the number of the piece that you would like to place?\n");
-  
+   
     while (num_picked<5)
     {
-   displayBoard(board);
-      
-      if (!piece1)
+         orientation=false;
+        displayBoard(board);
+        if (!piece1)
         printf("1: AIRCRAFT\n");
         if (!piece2)
         printf("2: BATTLESHIP \n");
@@ -190,11 +217,15 @@ void PickPiece(char ** board)
               printf("4: DESTROYER \n");
         if (!piece5)
         printf("5: PATROL BOAT \n");
-        if (!piece1 || !piece2 || !piece3 || !piece4 || !piece5)
+       //  scanf("%d", &piece);
+        while (!(( !piece1 && piece==1) || (!piece2 && piece==2) || (!piece3 && piece==3) || (!piece4 && piece==4) || (!piece5 && piece==5)))
         {
-            scanf("%d", &piece);
+            printf("please type a valid piece\n");
+             scanf("%d", &piece);
         }
-         if (piece==1)
+ 
+       
+        if (piece==1)
         {
             piece1=true;
             num_picked++;
@@ -224,9 +255,14 @@ void PickPiece(char ** board)
             num_picked++;
             hitPB++;
         }
+        
+        int size=0;
+    
+    
+    
         do
            {
-               printf("What orientation would you like to have the piece (veritcal/horizontal)\n");
+               printf("What orientation would you like to have the piece (vertical/horizontal)\n");
                scanf("%s", response);
            
                if (WordExists(response, "horizontal"))
@@ -260,11 +296,12 @@ void PickPiece(char ** board)
             break;
         
             case 5:     // patrol boat picked
-            size=2;
+                size=2;
             break;
         }
         placePiece_Begin(is_vertical, board, size);
     }
+    displayBoard(board);
 }
 
 char ** newBoard()      // creates a matrix initializing everything to a
@@ -304,20 +341,134 @@ bool OutofBounds(int x, int y)
         return false;
     }
 }
-char ** attackBoard(int x, int y, char ** board)        // x and y are coordinates
+bool PieceExists(int y, int x)
 {
-    if (OutofBounds(x,y))
+    int checkp;
+    if (playernumber==2)
     {
-        if (hitpiece())
-        {
-        board[x][y]='+';
+        checkp=1;
+    }
+    else if (playernumber==1)
+    {
+        checkp=2;
+    }
+    else{                                   // this code will never run. I got issues if I didn't include
+        printf("invalid number, try again");
+  //      return false;;
+    }
+    Buff[0] = 'R';
+    Buff[1] = y;
+    Buff[2] =x;
+    Buff[3]=checkp;
+   
+    if (searchBoard[x][y]=='-')
+        return true;
+        else return false;
+   
+  //  if (Readline(sockfd, Buff, 1024-1)==0)
+    {
+   //     return true;
+    }
+   // else return false;
+}
+ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
+    ssize_t n, rc;
+    char    c, *buffer;
+    
+    buffer = vptr;
+    
+    for ( n = 1; n < maxlen; n++ ) {
+        
+        if ( (rc = read(sockd, &c, 1)) == 1 ) {
+            *buffer++ = c;
+            if ( c == '\n' )
+            break;
         }
-        else if (!hitpiece())
-        {
-            board[x][y]='-';
+        else if ( rc == 0 ) {
+            if ( n == 1 )
+            return 0;
+            else
+            break;
+        }
+        else {
+            if ( errno == EINTR )
+            continue;
+            return -1;
         }
     }
-    return board;
+    
+    *buffer = 0;
+    return n;
+}
+ssize_t Writeline(int sockd, const void *vptr, size_t n) {
+    size_t      nleft;
+    ssize_t     nwritten;
+    const char *buffer;
+    
+    buffer = vptr;
+    nleft  = n;
+    
+    while ( nleft > 0 ) {
+        if ( (nwritten = write(sockd, buffer, nleft)) <= 0 ) {
+            if ( errno == EINTR )
+            nwritten = 0;
+            else
+            return -1;
+        }
+        nleft  -= nwritten;
+        buffer += nwritten;
+    }
+    
+    return n;
+}
+
+bool attackBoard(char ** searchBoard)        // x and y are coordinates
+{
+    
+    int x ;
+    enum row y;
+    char *letter = malloc(sizeof(char)*1);
+    int hit = 43;
+    bool placed=false;
+    
+    do {
+        printf("Please pick the coordinates that you would like to guess (in the format of A #: ");
+        scanf("%s", letter);
+    
+    
+        scanf("%d", &x);
+    
+    
+        y = convert(letter);
+    
+        if (!OutofBounds(x,y))
+        {
+            if (searchBoard[x][y]=='-') // not guessed yet
+            {
+                if (PieceExists(y, x))
+                {
+                
+                searchBoard[y][x]=hit;
+                placed=true;
+                Buff[0]='W';
+                Buff[1]=x;
+                Buff[2]=y;
+                Buff[30]=playernumber;
+                    placed=true;
+              //  Writeline(sockfd, Buff, strlen(Buff));
+                
+                return true;
+                }
+                else
+                {
+                    //searchBoard[x][y]='+';
+                    return false;
+                }
+            }
+        }
+    }
+        while (placed==false);
+    return false;
 }
 void displayBoard(char ** board)
 {
@@ -336,84 +487,261 @@ void displayBoard(char ** board)
     }
     printf("\n");
 }
+void deleteBoard(char **board)
+{
+    
+    for (int i=0; i<10;i++)
+    {
+        free(board[i]);
+    }
+     free(board);
+}
 int displayMenu()
 {
     
-    char **board, ** searchBoard;
-    
     board = newBoard();     // initialize board
     
-    bool startGame=false;
-    
-    searchBoard = newBoard();    // that is the board the computer will see
+    searchBoard = newBoard();
     int num=0;
+      searchBoard = newBoard();    // that is the board the computer will see
+    do
+    {
+    
+  
+    
     
     printf("Please select an option.\n");
     printf("1: Start a new Game\n");
     printf("2: Display Board\n");
-    printf("3: Cancel Game\n");
-    printf("4: Display the introduction again\n");
+    printf("3: Attack\n");
+    printf("4: Cancel Game\n");
     printf("5: Quit\n\n\n");
     
     scanf("%d", &num);
-    
+
     if (num==1)
     {
-        startGame=true;
+        started=true;
         // print top row of numbers
         PickPiece(board);                   // this will allow you to select the ships
         // return contents;
         
     }
-    else if (num==2 && startGame)
+    else if (num==2 && started)
     {
-        displayBoard(board);
+        displayBoard(searchBoard);
     }
     else if (num==2)
     {
         printf("You have not started the game yet. Please start the game\n");
     }
-    else if (num==3 && startGame)
+    else if (num==3 && started)
     {
-        deleteBoard(board, searchBoard);
-        return 0;
+        attackBoard(searchBoard);
     }
-    else if (num==3)
+    else if (num==4 && started)
     {
-        return 0;       // return to server menu
+        deleteBoard(board);
+        deleteBoard(searchBoard);
+        return 0;
     }
     else if (num==4)
     {
-        introduction();
+        return 0;       // return to server menu
     }
     
-    else if (num==5)
+    else if (num==4)
     {
-        deleteBoard(board, searchBoard);
+        deleteBoard(board);
+        deleteBoard(searchBoard);
         exit(0);
     }
     else{
         printf("Your answer was unrecognizable. Please try again\n\n\n");
     }
-    
+    } while (  num<4);
     return num;
 }
-
-int main(void)
+int startGame(void);
+int startGame(void)
 {
-       
-    int num;
-    char *answer = malloc(sizeof(char)*1);
-    printf("Do you want to read the introduction? (y/n)");
-    scanf("%c", answer);
     
-    if (WordExists(answer, "y"))
-    {
-        introduction();
-    }
+    int num;
     
     do {
         num=displayMenu();
     } while (num==2);
     num = displayMenu();
+    return num;
+}
+int MainMenu()
+{
+    
+    int response=0;
+    
+    do
+    {
+        printf("Please select an option.\n");
+        printf("1: Start a new Server\n");
+        printf("2: Join Server\n");
+        printf("3: Display the introduction again\n");
+        printf("4: Quit\n\n\n");
+        
+    }
+    while (response>5 || response<0);
+    
+    scanf("%d", &response);
+    
+    return response;
+}
+void introduction()
+{
+    printf("Welcome to the game battleship. This will be played over tux.\n");
+    printf("First, you will be prompted where to select your ships.\n");
+    printf("Then you will begin the game. Just select where to hit the pieces\n");
+    printf("The menu will display now\n\n\n");
+}
+
+int main(int argc, const char * argv[])
+{
+    
+    int num;
+    introduction();
+ 
+    
+
+    pid_t t;
+    
+    do
+    {
+        num = MainMenu();
+        if (num==1)
+        {
+            playernumber=1;
+            // start server function
+            printf("Please enter an IP Address\n");
+            
+            scanf(" %d", &IP);
+            while (isdigit(IP) && IP>0)        // has some isues
+            {
+                printf("Please enter an IP Address\n");
+                
+                scanf(" %d", &IP);
+            }
+            
+            memset(Buff, '0',sizeof(Buff));
+            if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+            {
+                printf("\n Error : Could not create socket \n");
+                return 1;
+            }
+            
+            serv_addr.sin_family = AF_INET;
+            serv_addr.sin_port = htons(5000);
+            
+            if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+            {
+                printf("\n Error : Connect Failed \n");
+                return 1;
+            }
+            
+            while ( (n = read(sockfd, Buff, sizeof(Buff)-1)) > 0)
+            {
+                Buff[n] = 0;
+                if(fputs(Buff, stdout) == EOF)
+                {
+                    printf("\n Error : Fputs error\n");
+                }
+            }
+        
+        // make IP Address 127.0.0.1
+        
+        startGame();
+        }
+        
+        if (num==2)
+        {
+            playernumber=2;
+            IP=atoi("127.0.0.1");
+            
+            memset(Buff, '0',sizeof(Buff));
+            if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+            {
+                printf("\n Error : Could not create socket \n");
+                return 1;
+            }
+            
+            serv_addr.sin_family = AF_INET;
+            serv_addr.sin_port = htons(5000);
+            
+            if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+            {
+                printf("\n Error : Connect Failed \n");
+                return 1;
+            }
+            
+            while ( (n = read(sockfd, Buff, sizeof(Buff)-1)) > 0)
+            {
+                Buff[n] = 0;
+                if(fputs(Buff, stdout) == EOF)
+                {
+                    printf("\n Error : Fputs error\n");
+                }
+            }
+            
+            
+            
+            // join server function
+            // join host
+        }
+        
+        /*  Set the remote port  */
+        
+        port = strtol(szPort, &endptr, 0);      // unrecognizable function
+        if ( *endptr ) {
+            printf("ECHOCLNT: Invalid port supplied.\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        
+        /*  Create the listening socket  */
+        
+        if ( (conn_s = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+            fprintf(stderr, "ECHOCLNT: Error creating listening socket.\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        
+        /*  Set all bytes in socket address structure to
+         zero, and fill in the relevant data members   */
+        
+        memset(&servaddr, 0, sizeof(servaddr));
+        servaddr.sin_family      = AF_INET;
+        servaddr.sin_port        = htons(port);
+        
+        
+        /*  Set the remote IP address  */
+        
+        if ( inet_aton(szAddress, &servaddr.sin_addr) <= 0 ) {
+            printf("ECHOCLNT: Invalid remote IP address.\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        
+        /*  connect() to the remote echo server  */
+        
+        if ( connect(conn_s, (struct sockaddr *) &servaddr, sizeof(servaddr) ) < 0 ) {
+            printf("ECHOCLNT: Error calling connect()\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        if (num==3)
+        {
+            introduction();
+        }
+        
+    } while(num<4);
+    
+    
+    return 0;
 }
