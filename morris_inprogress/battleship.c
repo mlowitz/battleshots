@@ -23,6 +23,10 @@ char     *endptr;                /*  for strtol()              */
 int playernumber;
 char **board, ** searchBoard;
 bool started=false;
+int p1=0;
+int p2=0;
+int p3=0;
+int p4=0;
 
 bool shipexists()
 {
@@ -94,7 +98,8 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
         {
             return  false;
         }
-        for (int ii=y; ii<y+length; ii++)
+        int ii;
+        for ( ii=y; ii<y+length; ii++)
         {
           
             if (board[ii][x]!='-')
@@ -117,7 +122,8 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
         {
             return false;
         }
-        for (int ii=x; ii<x+length; ii++)   // determines if the ship will be out of bounds
+        int ii;
+        for (ii=x; ii<x+length; ii++)   // determines if the ship will be out of bounds
         {
             
             if (board[y][ii]!='-')
@@ -154,8 +160,8 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
         {
             if (!is_vertical)               // determines if artifact will be vertical
                     {
-                
-                    for (int jj = x; jj<x+length; jj++)
+                        int jj;
+                    for ( jj = x; jj<x+length; jj++)
                     {
                         placed=true;
                         board[y][jj] = length+48;
@@ -164,7 +170,8 @@ void placePiece_Begin(bool is_vertical, char ** board, int length)
             
                 else if (is_vertical)
                     {
-                    for (int jj = y; jj<y+length; jj++)
+                        int jj;
+                    for (jj = y; jj<y+length; jj++)
                     {
                         placed=true;
                         board[jj][x] = length+48;
@@ -229,31 +236,30 @@ void PickPiece(char ** board)
         {
             piece1=true;
             num_picked++;
-            hitAC++;
+          
         }
         if (piece==2)
         {
             piece2=true;
             num_picked++;
-            hitBAT++;
+           
         }
         if (piece==3)
         {
             piece3=true;
             num_picked++;
-            hitSub++;
+        
         }
         if (piece==4)
         {
             piece4=true;
             num_picked++;
-            hitDes++;
+    
         }
         if (piece==5)
         {
             piece5=true;
             num_picked++;
-            hitPB++;
         }
         
         int size=0;
@@ -309,12 +315,13 @@ char ** newBoard()      // creates a matrix initializing everything to a
     char ** matrix;
     
     matrix = (char**)malloc(sizeof(char*)*10);
-    
-    for (int i=0; i<10;i++)
+    int i;
+    for (i=0; i<10;i++)
     {
         
         matrix[i] = (char*)malloc(sizeof(char));
-        for (int j=0;j<10;j++)
+        int j;
+        for (j=0;j<10;j++)
         {
             matrix[i][j]=(char)malloc(sizeof(char)*1);
             matrix[i][j]='-';
@@ -365,11 +372,27 @@ bool PieceExists(int y, int x)
         return true;
         else return false;
    
-  //  if (Readline(sockfd, Buff, 1024-1)==0)
+    if (Readline(sockfd, Buff, 1024-1)==0)
     {
-   //     return true;
+        if (Buff[0]==1)
+        {
+            p1++;
+        }
+        if (Buff[0]==2)
+        {
+            p2++;
+        }
+        if (Buff[0]==3)
+        {
+            p3++;
+        }
+        if (Buff[0]==4)
+        {
+            p4++;
+        }
+        return true;
     }
-   // else return false;
+    else return false;
 }
 ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
     ssize_t n, rc;
@@ -470,18 +493,24 @@ bool attackBoard(char ** searchBoard)        // x and y are coordinates
         while (placed==false);
     return false;
 }
+void checkifShipSank()
+{
+    
+}
 void displayBoard(char ** board)
 {
     printf("\n   ");
-    for (int i = 0; i < 10; i++)
+    int k;
+    for ( k = 0;k < 10; k++)
     printf("%d  ", i);
     printf("\n");
-    
+    int i;
     // print rows of holes, with letters in leftmost column
-    for (int i = 0; i < 10; i++)
+    for ( i = 0; i < 10; i++)
     {
         printf("%c  ", 'A' + i);
-        for (int j = 0; j < 10; j++)
+        int j;
+        for (j = 0; j < 10; j++)
         printf("%c  ", board[i][j]);
         printf("\n");
     }
@@ -489,8 +518,8 @@ void displayBoard(char ** board)
 }
 void deleteBoard(char **board)
 {
-    
-    for (int i=0; i<10;i++)
+    int i;
+    for ( i=0; i<10;i++)
     {
         free(board[i]);
     }
@@ -507,8 +536,6 @@ int displayMenu()
     do
     {
     
-  
-    
     
     printf("Please select an option.\n");
     printf("1: Start a new Game\n");
@@ -519,7 +546,11 @@ int displayMenu()
     
     scanf("%d", &num);
 
-    if (num==1)
+        if (p1==1 && p2==2 && p3==3 && p4==4)
+        {
+            exit(0);
+        }
+    if (num==1 && !started)
     {
         started=true;
         // print top row of numbers
@@ -527,6 +558,10 @@ int displayMenu()
         // return contents;
         
     }
+        if (num==1 && started)
+        {
+        printf("You started a game. One game can be played at a time");
+        }
     else if (num==2 && started)
     {
         displayBoard(searchBoard);
