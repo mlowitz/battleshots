@@ -14,6 +14,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#include <ctype.h>
 
 
 #define Ship_Size 10
@@ -22,20 +28,15 @@ enum ship_piece {patrol_boat=5, destroyer=4, submarine=3,battleship=2,aircraft_c
 enum row {a=0, b=1, c=2, d=3, e=4, f=5, g=6, h=7, i=8, j=9};
 enum shipType {water=00, ship1=02, ship3=04, ship4=05, ship5=06};
 
+
+
 char ** newBoard() ;
-char ** attackBoard(int x, int y, char ** board);
+bool attackBoard(char ** searchBoard);
 bool OutofBounds(int x, int y);
 bool WordExists(char word[32], char *letter);
 void displayBoard(char ** board);
-
-
-
-void introduction()
-{
-    printf("Welcome to the game battleship. This will be played over tux.\n");
-    printf("First, you will be prompted where to select your ships.\n");
-    printf("Then you will begin the game. Just select where to hit the pieces")
-     printf("The menu will display now\n\n\n");;
-}
+ssize_t Writeline(int sockd, const void *vptr, size_t n);
+ssize_t Readline(int sockd, void *vptr, size_t maxlen);
+void introduction();
 
 #endif
