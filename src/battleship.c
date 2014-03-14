@@ -650,15 +650,8 @@ int main(int argc, const char * argv[])
         {
             playernumber=1;
             // start server function
-            printf("Please enter an IP Address\n");
+            IP=atoi("127.0.0.1");
             
-            scanf(" %d", &IP);
-            while (isdigit(IP) && IP>0)        // has some isues
-            {
-                printf("Please enter an IP Address\n");
-                
-                scanf(" %d", &IP);
-            }
             
             memset(Buff, '0',sizeof(Buff));
             if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -692,8 +685,17 @@ int main(int argc, const char * argv[])
         
         if (num==2)
         {
+            printf("Please enter an IP Address\n");
+            
+            scanf(" %d", &IP);
+            while (isdigit(IP) && IP>0)        // has some isues
+            {
+                printf("Please enter an IP Address\n");
+                
+                scanf(" %d", &IP);
+            }
             playernumber=2;
-            IP=atoi("127.0.0.1");
+            
             
             memset(Buff, '0',sizeof(Buff));
             if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
