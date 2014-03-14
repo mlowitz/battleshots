@@ -650,6 +650,8 @@ int main(int argc, const char * argv[])
         {
             playernumber=1;
             // start server function
+            
+            server();
             IP=atoi("127.0.0.1");
             
             
