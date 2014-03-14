@@ -186,8 +186,6 @@ void server() {
 	}
 	  }
 	else{
-	  //wait(0);
-   
 	}
 
 	
