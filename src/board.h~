@@ -22,6 +22,3 @@ char* board_get(board *board, char *position, char *player);
 void board_put(board *board, char *position, char *player, char *status);  /* store entry */
 void board_remove(board *board, char *position);          /* remove entry */
 void *ana_get(board *board, char *position);            /*prints list of anagrams */    
-
-int CharToInt(char c); //convert char to int 
-int wordToInt(char* s); //convert word to int 

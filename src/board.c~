@@ -12,7 +12,7 @@ unsigned long _hash(char *position)
    */
   
   int c;
-  unsigned long hash=wordToInt(position); 
+  unsigned long hash=wordToIntposition); 
     
   
   return hash;
@@ -163,29 +163,3 @@ void board_add(board *board, char *position, char *player, char*status)
     n = n->nxt;
   }
 }
-
-int CharToInt(char c) {
-    if(!isalpha(c))
-    {return 0;}
-    c = tolower(c);
-    int x = (int) c - (int) 'a';
-    return x + 1;
-}
-
-int wordToInt(char* s){
-   int x=0; // return val of word 
-   int l = strlen(s);
-   int i; 
-   for (i=0; i<l; i++)
-   {
-       if(s[i]!= '\n'){
-       if(s[i]==' '){i++;}    
-       x=x+CharToInt(s[i]);
-       }
-    }
-   //printf("%d",x);
-   //printf("%s\n",s);
-   return x; 
-   
-}
-

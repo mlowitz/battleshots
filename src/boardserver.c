@@ -57,7 +57,7 @@ void error(char *msg) {
 	exit(1);
 }
 
-int server(int argc, char **argv) {
+int server() {
 	int listenfd; /* listening socket */
 	int connfd; /* connection socket */
 	int portno; /* port to listen on */
