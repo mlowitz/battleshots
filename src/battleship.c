@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include "battleship_header.h"
-//#include "boardserver.c"
+#include "boardserver.c"
 
 int IP = 0;
 int sockfd = 0, n = 0;
@@ -573,7 +573,7 @@ int displayMenu()
     }
     else if (num==4 && started)
     {
-        deleteBoard(board);
+        deleteBoard(bat);
         deleteBoard(searchBoard);
         return 0;
     }
