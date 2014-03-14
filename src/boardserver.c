@@ -72,7 +72,7 @@ int server() {
 	  {	  
 	/* check command line args */
        
-	portno = atoi(80);
+	portno = 5000;
 
 	/* socket: create a socket */
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -183,7 +183,7 @@ int server() {
 	}
 	  }
 	else{
-	exit(0);
+	
 	}
 }
 
