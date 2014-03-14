@@ -21,8 +21,8 @@ struct    sockaddr_in servaddr;  /*  socket address structure  */
 char     *szAddress;             /*  Holds remote IP address   */
 char     *szPort;                /*  Holds remote port         */
 char     *endptr;                /*  for strtol()              */
-int playernumber;
-char **board, ** searchBoard;
+int play_num;
+char ** bat, ** searchBoard;
 bool started=false;
 int p1=0;
 int p2=0;
@@ -111,7 +111,7 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
                 Buff[0]='W';
                 Buff[1]=ii;
                 Buff[2]=x;
-                Buff[3]=playernumber;
+                Buff[3]=play_num;
                 Writeline(sockfd, Buff, strlen(Buff));
                 
             }
@@ -133,7 +133,7 @@ bool placevalid(int x, int y, bool is_vertical, int length, char ** board)
             Buff[0]='W';
             Buff[1]=y;
             Buff[2]=ii;
-            Buff[3]=playernumber;
+            Buff[3]=play_num;
     //        Writeline(sockfd, Buff, strlen(Buff));
         }
     }
@@ -348,11 +348,11 @@ bool OutofBounds(int x, int y)
 bool PieceExists(int y, int x)
 {
     int checkp;
-    if (playernumber==2)
+    if (play_num==2)
     {
         checkp=1;
     }
-    else if (playernumber==1)
+    else if (play_num==1)
     {
         checkp=2;
     }
@@ -473,7 +473,7 @@ bool attackBoard(char ** searchBoard)        // x and y are coordinates
                 Buff[0]='W';
                 Buff[1]=x;
                 Buff[2]=y;
-                Buff[30]=playernumber;
+                Buff[30]=play_num;
                     placed=true;
               //  Writeline(sockfd, Buff, strlen(Buff));
                 
@@ -525,7 +525,7 @@ void deleteBoard(char **board)
 int displayMenu()
 {
     
-    board = newBoard();     // initialize board
+    bat = newBoard();     // initialize board
     
     searchBoard = newBoard();
     int num=0;
@@ -551,7 +551,7 @@ int displayMenu()
     {
         started=true;
         // print top row of numbers
-        PickPiece(board);                   // this will allow you to select the ships
+        PickPiece(bat);                   // this will allow you to select the ships
         // return contents;
         
     }
@@ -584,7 +584,7 @@ int displayMenu()
     
     else if (num==4)
     {
-        deleteBoard(board);
+        deleteBoard(bat);
         deleteBoard(searchBoard);
         exit(0);
     }
@@ -649,7 +649,7 @@ int main(int argc, const char * argv[])
         num = MainMenu();
         if (num==1)
         {
-            playernumber=1;
+            play_num=1;
             // start server function
             
             server();
@@ -697,7 +697,7 @@ int main(int argc, const char * argv[])
                 
                 scanf(" %d", &IP);
             }
-            playernumber=2;
+            play_num=2;
             
             
             memset(Buff, '0',sizeof(Buff));
