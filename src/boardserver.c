@@ -1,5 +1,3 @@
-
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -111,7 +109,7 @@ int server() {
 	board *board = board_create(16777216);
 	char* status=malloc(2*sizeof(char*));                                                                                                                         
 	char* player=malloc(2*sizeof(char*));                                                                                                                         
-	char* positon=malloc(2*sizeof(char*));                                                                                                                        
+	char* position=malloc(2*sizeof(char*));                                                                                                                        
 	char*ship = malloc(1*sizeof(char*));              
 	while (1) {
 	  
@@ -156,13 +154,13 @@ int server() {
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position 
 			ship = shipnum(buf); 
-			status =  board_put(board, position, player, ship);
+			board_put(board, position, player, ship);
 			
 
 			
 		}
 	
-		elseif(buf[0] == 'R')
+		else if(buf[0] == 'R')
 		{
 			/*
 			*function to read from server 
