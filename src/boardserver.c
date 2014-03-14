@@ -55,7 +55,7 @@ void error(char *msg) {
 	exit(1);
 }
 
-int server() {
+void server() {
 	int listenfd; /* listening socket */
 	int connfd; /* connection socket */
 	int portno; /* port to listen on */
@@ -67,12 +67,15 @@ int server() {
 	char *hostaddrp; /* dotted decimal host addr string */
 	int optval; /* flag value for setsockopt */
 	int n; /* message byte size */
+	//pid_t pID = fork();
 
-	if (fork() ==0)
+	if (fork() == 0)
 	  {	  
+	    //kill parent 
+	    //kill(getpid(), 9);
 	/* check command line args */
        
-	portno = atoi(80);
+	portno = 5000;
 
 	/* socket: create a socket */
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -183,8 +186,12 @@ int server() {
 	}
 	  }
 	else{
-	exit(0);
+	  //wait(0);
+   
 	}
+
+	
+
 }
 
 #endif
