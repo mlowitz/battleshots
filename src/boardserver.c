@@ -153,7 +153,7 @@ int server() {
 		  
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position 
-			ship = shipnum(buf); 
+			ship = shipNum(buf); 
 			board_put(board, position, player, ship);
 			
 

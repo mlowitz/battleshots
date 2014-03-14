@@ -1,4 +1,4 @@
-char* position(char* buffer)
+char* parsePosition(char* buffer)
 {
 	char* position[2];
 	position[0] = buffer[2];
