@@ -149,9 +149,9 @@ int server(int argc, char **argv) {
 			/*
 			*function to place peice in server
 			*/
-		  char* player=malloc(2*sizeof(char*));
-		  char* positon=malloc(2*sizeof(char*));
-		  char* ship = malloc(1*sizeof(char*));
+		  //  char* player=malloc(2*sizeof(char*));
+		  //char* positon=malloc(2*sizeof(char*));
+		  //char* ship = malloc(1*sizeof(char*));
 		  
 			player = playerNum(buf);//get player number
 			position = parsePosition(buf);//get position 

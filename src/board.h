@@ -18,7 +18,7 @@ typedef struct board {
  
 board *board_create(int size);                    /* allocate hasBOARDable mem */
 void board_destroy(board *board);                  
-char* board_get(board *board, char *position);            /* retrieve entry */
+char* board_get(board *board, char *position, char *player); 
 void board_put(board *board, char *position, char *player, char *status);  /* store entry */
 void board_remove(board *board, char *position);          /* remove entry */
 void *ana_get(board *board, char *position);            /*prints list of anagrams */    

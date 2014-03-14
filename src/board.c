@@ -113,27 +113,27 @@ dx = _hash(position) % board->size;
 void board_put(board *board, char *position, char *player, char *status)
 {
   if (!board) return;
-  if(!board->tbl[idx]){
+  
   unsigned long idx = _hash(position) % board->size;
- 
+ if(!board->tbl[idx]){
   struct square *n_new = calloc(1, sizeof(struct square));
-  n_new->position = calloc(1, strlen(position,BOARD_MAX_positionLEN)+1)
+  n_new->position = calloc(1, strlen(position)+1);
     strcpy(new_position,position);
   if(player[1]=='1')
     {
-      n_new->P1= calloc(1, strlen(status, board_MAX_positionLEN) + 1);//creates plaer 1
+      n_new->P1= calloc(1, strlen(status) + 1);//creates plaer 1
       strcpy(n_new->P1,status);
     }
   if(player[1]=='2')
     {
-      n_new->P2= calloc(1, strlen(status, board_MAX_positionLEN) +1);
+      n_new->P2= calloc(1, strlen(status) +1);
       strcpy(n_new->P2,status);
     }
 
     n_new->nxt = board->tbl[idx];
     board->tbl[idx] = n_new;}
   else
-    board_add(board, position, player,status
+    board_add(board, position, player,status);
 }
 //adds players ship  to already existing square. 
 void board_add(board *board, char *position, char *player, char*status)
@@ -156,7 +156,7 @@ void board_add(board *board, char *position, char *player, char*status)
       strcpy(n->P2,status);
     }
  
-      break;
+     break;
     }
  
     
