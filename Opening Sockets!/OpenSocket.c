@@ -51,6 +51,5 @@ int PromptOpenSocket()
 
 	
     return(clientSocket);
-	return (0);
 }
 
